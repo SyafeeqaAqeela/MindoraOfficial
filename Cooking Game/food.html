@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Choose Your Food - Mindora Cooking</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+    @font-face {
+      font-family: myFont;
+      src: url(ACaslonPro-Italic.otf);
+    }
+
+    body {
+      font-family: myFont;
+      margin: 0;
+      background: url('hp2.png') no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 40px;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+      margin-bottom: 40px;
+    }
+
+    .container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 60px;
+      transform: translateY(25px);
+    }
+
+    .food-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      width: 180px;
+      height: 230px;
+    }
+
+    .food-item:hover {
+      transform: scale(1.1);
+    }
+
+    .food-item img {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .food-item p {
+      margin-top: 5px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px;
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <h2>.</h2>
+
+  <div class="container">
+    <div class="food-grid">
+      <div class="food-item" title="Pasta" onclick="window.location.href='pasta.html'">
+        <img src="assets/pasta.png" alt="Pasta">
+        <p>Pasta</p>
+      </div>
+      <div class="food-item" title="Soup" onclick="window.location.href='soup.html'">
+        <img src="assets/soup.png" alt="Soup">
+        <p>Soup</p>
+      </div>
+      <div class="food-item" title="Cake" onclick="window.location.href='cake.html'">
+        <img src="assets/cake.png" alt="Cake">
+        <p>Cake</p>
+      </div>
+      <div class="food-item" title="Cupcake" onclick="window.location.href='cupcake.html'">
+        <img src="assets/cupcake.png" alt="Cupcake">
+        <p>Cupcake</p>
+      </div>
+      <div class="food-item" title="Lamb Chop" onclick="window.location.href='lambchop.html'">
+        <img src="assets/lambchop.png" alt="Lamb Chop">
+        <p>Lamb Chop</p>
+      </div>
+      <div class="food-item" title="Cookies" onclick="window.location.href='cookies.html'">
+        <img src="assets/cookies.png" alt="Cookies">
+        <p>Cookies</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function selectFood(food) {
+      alert("You selected " + food + "!");
+      // You can add redirects for other food pages here
+    }
+  </script>
+</body>
+</html>
