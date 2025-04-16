@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mindora Fashion Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f4f2;
+    }
+
+    .game-screen {
+      width: 100vw;
+      height: 100vh;
+      background: url('Home page.jpg') no-repeat center center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay {
+      background: rgba(255, 255, 255, 0.75);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 800px;
+      width: 90%;
+      position: relative;
+    }
+
+    .header-bar {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .timer {
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .timer img {
+      width: 25px;
+      margin-right: 10px;
+    }
+
+    .model {
+      max-height: 350px;
+      margin: 0 auto 20px;
+      display: block;
+    }
+
+    .choices {
+      display: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .choices img {
+      width: 120px;
+      height: 180px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+
+    .choices img:hover {
+      border-color: #c09c7d;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #333;
+    }
+
+    .next-round-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #c09c7d;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .top-right-buttons {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 1000;
+}
+
+.coin-btn,
+.settings-btn {
+  background: #fff;
+  border: 2px solid #c09c7d;
+  padding: 6px 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.coin-btn:hover,
+.settings-btn:hover {
+  background: #f1e6dd;
+}
+
+.coin-btn img,
+.settings-btn img {
+  width: 22px;
+}
+    .settings-popup {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: #fff;
+      border: 2px solid #c09c7d;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
+      display: none;
+    }
+
+    .settings-popup h3 {
+      margin-top: 0;
+    }
+
+    .settings-popup label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <iframe id="musicFrame" src="music.html" style="display: none;" allow="autoplay"></iframe>
+
+<div class="game-screen">
+  <a href="homepage.html" class="home-btn">🏠</a>
+
+  <div class="overlay">
+    <div class="header-bar">
+      <div class="top-right-buttons">
+        <button class="coin-btn">
+          <img src="coins.png" alt="Coins" />
+          <span id="coinCount">0</span>
+        </button>
+        <button class="settings-btn" id="settingsBtn">
+          <img src="settings.png" alt="Settings" />
+        </button>
+      </div>
+    </div>
+
+    <div class="timer">
+      <span id="countdown">0:05 s</span>
+    </div>
+
+    <img src="" class="model" id="modelLook" alt="Model Look" />
+
+    <div class="choices" id="choices"></div>
+    <div class="result" id="resultMsg"></div>
+    <button class="next-round-btn" onclick="startGame()">Next Round</button>
+  </div>
+</div>
+
+<!-- Settings Popup -->
+<div class="settings-popup" id="settingsPopup">
+  <h3>Settings</h3>
+  <label>
+    <input type="checkbox" id="musicToggle"> Music
+  </label>
+  <label>
+    <input type="checkbox" id="soundToggle"> Sound Effects
+  </label>
+</div>
+
+<script>
+  const modelImage = document.getElementById("modelLook");
+  const timerText = document.getElementById("countdown");
+  const choicesDiv = document.getElementById("choices");
+  const resultMsg = document.getElementById("resultMsg");
+  const nextRoundBtn = document.querySelector(".next-round-btn");
+  const coinCountEl = document.getElementById("coinCount");
+  const settingsBtn = document.getElementById("settingsBtn");
+  const settingsPopup = document.getElementById("settingsPopup");
+
+  let coins = 0;
+  let countdown;
+  let timeLeft = 5;
+
+  const models = [
+    { modelImg: "model 1.png", correctOption: "model 1.png" },
+    { modelImg: "model 2.png", correctOption: "model 2.png" },
+    { modelImg: "model 3.png", correctOption: "model 3.png" },
+    { modelImg: "model 4.png", correctOption: "model 4.png" },
+    { modelImg: "model 5.png", correctOption: "model 5.png" },
+    { modelImg: "model 6.png", correctOption: "model 6.png" },
+    { modelImg: "model 4 duplicate.png", correctOption: "model 4 duplicate.png" },
+    { modelImg: "model 5 duplicate.png", correctOption: "model 5 duplicate.png" },
+    { modelImg: "model 6 duplicate.png", correctOption: "model 6 duplicate.png" },
+    { modelImg: "model 7.png", correctOption: "model 7.png" }
+  ];
+
+  const allOptions = [
+    "model 1.png", "model 2.png", "model 3.png", "model 3 duplicate.png",
+    "model 4.png", "model 4 duplicate.png", "model 5.png", "model 5 duplicate.png",
+    "model 6.png", "model 6 duplicate.png", "model 7.png"
+  ];
+
+  function startGame() {
+    const randomModel = models[Math.floor(Math.random() * models.length)];
+    modelImage.src = randomModel.modelImg;
+    modelImage.style.display = "block";
+
+    const shuffledOptions = [...allOptions].sort(() => 0.5 - Math.random());
+    if (!shuffledOptions.includes(randomModel.correctOption)) {
+      shuffledOptions[0] = randomModel.correctOption;
+    }
+
+    resultMsg.textContent = "";
+    nextRoundBtn.style.display = "none";
+    choicesDiv.innerHTML = "";
+    choicesDiv.style.display = "none";
+
+    timeLeft = 5;
+    timerText.textContent = `0:${timeLeft.toString().padStart(2, '0')} s`;
+
+    clearInterval(countdown);
+    countdown = setInterval(() => {
+      timeLeft--;
+      timerText.textContent = `0:${timeLeft.toString().padStart(2, '0')} s`;
+
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        modelImage.style.display = "none";
+        showOptions(shuffledOptions, randomModel.correctOption);
+      }
+    }, 1000);
+  }
+
+  function showOptions(options, correctImg) {
+    choicesDiv.innerHTML = "";
+    choicesDiv.style.display = "flex";
+
+    options.forEach(img => {
+      const option = document.createElement("img");
+      option.src = img;
+      option.setAttribute("data-correct", img === correctImg);
+      option.addEventListener("click", () => {
+        const isCorrect = option.getAttribute("data-correct") === "true";
+        if (isCorrect) {
+          coins += 5;
+          localStorage.setItem("coins", coins);
+          coinCountEl.textContent = coins;
+          resultMsg.textContent = "✅ Correct! +5 Coins!";
+        } else {
+          resultMsg.textContent = "❌ Wrong! Try again next round!";
+        }
+
+        nextRoundBtn.style.display = "inline-block";
+        disableOptions();
+      });
+      choicesDiv.appendChild(option);
+    });
+  }
+
+  function disableOptions() {
+    const imgs = choicesDiv.querySelectorAll("img");
+    imgs.forEach(img => img.style.pointerEvents = "none");
+  }
+
+  function loadCoins() {
+    const stored = localStorage.getItem("coins");
+    return stored ? parseInt(stored) : 0;
+  }
+
+  function toggleSettingsPopup() {
+    settingsPopup.style.display = settingsPopup.style.display === "block" ? "none" : "block";
+  }
+
+  // On page load
+  document.addEventListener("DOMContentLoaded", () => {
+    coins = loadCoins();
+    coinCountEl.textContent = coins;
+
+    startGame();
+
+    settingsBtn.addEventListener("click", toggleSettingsPopup);
+  });
+</script>
+
+</body>
+</html>
